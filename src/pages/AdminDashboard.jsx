@@ -15,7 +15,8 @@ import {
     Edit,
     Trash2,
     Search,
-    Eye
+    Eye,
+    Upload
 } from 'lucide-react';
 import {
     PieChart,
@@ -240,8 +241,8 @@ const AdminDashboard = () => {
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`px-6 py-2 rounded-md font-medium transition-all ${activeTab === tab
-                                    ? 'bg-amber-600 text-white shadow-md'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                ? 'bg-amber-600 text-white shadow-md'
+                                : 'text-gray-600 hover:bg-gray-100'
                                 }`}
                         >
                             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -319,9 +320,9 @@ const AdminDashboard = () => {
                                                 <td className="px-4 py-3 text-sm font-semibold">₹{order.finalAmount}</td>
                                                 <td className="px-4 py-3">
                                                     <span className={`px-2 py-1 text-xs rounded-full ${order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
-                                                            order.orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                                                                order.orderStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-gray-100 text-gray-800'
+                                                        order.orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                                                            order.orderStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
+                                                                'bg-gray-100 text-gray-800'
                                                         }`}>
                                                         {order.orderStatus}
                                                     </span>
@@ -679,9 +680,81 @@ const ProductModal = ({ product, onClose, onSave }) => {
             featured: false
         }
     );
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(product?.image || '');
+    const [uploading, setUploading] = useState(false);
+
+    const handleFileSelect = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Image size should be less than 5MB');
+            return;
+        }
+
+        setSelectedFile(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload immediately
+        await uploadImage(file);
+    };
+
+    const uploadImage = async (file) => {
+        try {
+            setUploading(true);
+            const formDataToSend = new FormData();
+            formDataToSend.append('image', file);
+
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                'http://localhost:5000/api/upload-image',
+                formDataToSend,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                const imageUrl = `http://localhost:5000${response.data.imageUrl}`;
+                setFormData({ ...formData, image: imageUrl });
+                toast.success('Image uploaded successfully!');
+            }
+        } catch (error) {
+            console.error('Image upload error:', error);
+            toast.error('Failed to upload image');
+            setSelectedFile(null);
+            setImagePreview(product?.image || '');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!formData.image) {
+            toast.error('Please upload a product image');
+            return;
+        }
+
         onSave(formData);
     };
 
@@ -726,16 +799,55 @@ const ProductModal = ({ product, onClose, onSave }) => {
                             </select>
                         </div>
                     </div>
+
+                    {/* Image Upload Section */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.image}
-                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                        />
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                        <div className="space-y-3">
+                            {/* Image Preview */}
+                            {imagePreview && (
+                                <div className="relative w-full h-48 border-2 border-gray-300 rounded-lg overflow-hidden">
+                                    <img
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+
+                            {/* File Input */}
+                            <div className="flex items-center gap-3">
+                                <label className="flex-1 cursor-pointer">
+                                    <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition-colors">
+                                        {uploading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-amber-600"></div>
+                                                <span className="text-sm text-gray-600">Uploading...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="w-5 h-5 text-amber-600" />
+                                                <span className="text-sm font-medium text-gray-700">
+                                                    {imagePreview ? 'Change Image' : 'Upload Image'}
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                        disabled={uploading}
+                                    />
+                                </label>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                                Supported formats: JPEG, PNG, GIF, WebP (Max 5MB)
+                            </p>
+                        </div>
                     </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                         <textarea
@@ -811,7 +923,8 @@ const ProductModal = ({ product, onClose, onSave }) => {
                     <div className="flex gap-3 pt-4">
                         <button
                             type="submit"
-                            className="flex-1 bg-amber-600 text-white py-2 rounded-lg hover:bg-amber-700 transition-colors font-medium"
+                            disabled={uploading}
+                            className="flex-1 bg-amber-600 text-white py-2 rounded-lg hover:bg-amber-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
                             {product ? 'Update Product' : 'Add Product'}
                         </button>

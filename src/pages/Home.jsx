@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { products } from '../data/products';
@@ -14,7 +14,7 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-brand-bg to-[#F9C8C8] px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
@@ -29,7 +29,7 @@ const Home = () => {
             <p className="text-lg md:text-xl text-brand-text/80 italic font-medium max-w-lg">
               "Handmade with heritage and heart. Our snacks & sweets are a timeless art!"
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <div className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold text-xl shadow-lg transform -rotate-2 inline-block text-center w-fit">
                 UP TO <span className="text-3xl">50%</span> OFF
@@ -40,26 +40,26 @@ const Home = () => {
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
             <div className="grid grid-cols-2 gap-4">
-              <img 
-                src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=1000&auto=format&fit=crop" 
-                alt="Sweets Platter" 
+              <img
+                src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=1000&auto=format&fit=crop"
+                alt="Sweets Platter"
                 className="rounded-2xl shadow-xl object-cover h-64 w-full transform translate-y-8 hover:-translate-y-2 transition-transform duration-500"
               />
-              <img 
-                src="https://images.unsplash.com/photo-1605197584547-c93aa1cd3d52?q=80&w=1000&auto=format&fit=crop" 
-                alt="Murukku" 
+              <img
+                src="https://images.unsplash.com/photo-1605197584547-c93aa1cd3d52?q=80&w=1000&auto=format&fit=crop"
+                alt="Murukku"
                 className="rounded-2xl shadow-xl object-cover h-64 w-full hover:-translate-y-2 transition-transform duration-500"
               />
-              <img 
-                src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=1000&auto=format&fit=crop" 
-                alt="Laddoo" 
+              <img
+                src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=1000&auto=format&fit=crop"
+                alt="Laddoo"
                 className="rounded-2xl shadow-xl object-cover h-64 w-full transform -translate-y-8 hover:-translate-y-12 transition-transform duration-500 col-span-2 mx-auto w-3/4"
               />
             </div>
@@ -67,31 +67,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products Section */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-4xl font-bold text-brand-primary mb-4">Featured Delicacies</h2>
-            <p className="text-brand-text/70 max-w-2xl mx-auto">
-              Our most loved sweets and snacks, prepared fresh daily using traditional recipes passed down through generations.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          <div className="text-center mt-12">
-            <Link to="/menu" className="inline-flex items-center gap-2 border-2 border-brand-primary text-brand-primary font-bold py-3 px-8 rounded-full hover:bg-brand-primary hover:text-white transition-all">
-              View Full Menu <ArrowRight size={20} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
+      {/* About Section - Moved right after Hero */}
       <section id="about" className="py-20 px-4 bg-brand-light relative overflow-hidden">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="mb-12 flex justify-center">
@@ -105,7 +81,7 @@ const Home = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center text-left">
             <div className="space-y-6 text-brand-text/90 leading-relaxed">
               <p className="text-lg">
-                Welcome to <span className="font-bold text-brand-primary">Noble Bits</span> – your one-stop destination for authentic Tamil Nadu snacks and sweets. Rooted in tradition and crafted with love, we bring the timeless flavors of our heritage straight to your plate.
+                Welcome to <span className="font-bold text-brand-primary">Noble Bites</span> – your one-stop destination for authentic Tamil Nadu snacks and sweets. Rooted in tradition and crafted with love, we bring the timeless flavors of our heritage straight to your plate.
               </p>
               <p>
                 From crispy murukkus to melt-in-mouth adhirasams, every bite is a celebration of our culture, made using age-old recipes and the finest ingredients. Whether you're craving something spicy, sweet, or both — we serve it fresh, just like how grandma made it!
@@ -119,12 +95,12 @@ const Home = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-0 bg-brand-primary rounded-full opacity-10 blur-3xl"></div>
-              <img 
-                src="https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=1000&auto=format&fit=crop" 
-                alt="Traditional Serving" 
+              <img
+                src="https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=1000&auto=format&fit=crop"
+                alt="Traditional Serving"
                 className="rounded-full w-full max-w-md mx-auto shadow-2xl border-8 border-white"
               />
             </div>
@@ -132,76 +108,26 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 bg-brand-bg">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-[#EBC7C7] rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
-             {/* Decorative header */}
-             <div className="text-center mb-12">
-                <h2 className="font-heading text-4xl font-bold text-brand-text inline-block border-b-2 border-brand-text pb-2">Contact Us</h2>
-             </div>
+      {/* Featured Products Section */}
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="font-heading text-4xl font-bold text-brand-primary mb-4">Featured Delicacies</h2>
+            <p className="text-brand-text/70 max-w-2xl mx-auto">
+              Our most loved sweets and snacks, prepared fresh daily using traditional recipes passed down through generations.
+            </p>
+          </div>
 
-             <div className="grid md:grid-cols-2 gap-12">
-                {/* Contact Info */}
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <h3 className="font-heading text-2xl font-bold text-brand-primary mb-6">Location</h3>
-                    
-                    <div className="flex items-start gap-3 text-brand-text font-medium">
-                      <MapPin className="mt-1 text-brand-primary" />
-                      <div>
-                        <p>Ranipet District - 631102</p>
-                        <p>Coimbatore District - 641402</p>
-                        <p>Chennai District - 600001</p>
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
 
-                    <div className="flex items-center gap-3 text-brand-text font-medium">
-                      <Phone className="text-brand-primary" />
-                      <p>+91 9488110405</p>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-brand-text font-medium">
-                      <Mail className="text-brand-primary" />
-                      <p>logeshofficial333@gmail.com</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-heading text-xl font-bold text-brand-text mb-4">Follow us</h3>
-                    <div className="flex gap-4">
-                      {[Instagram, Facebook, Youtube].map((Icon, i) => (
-                        <a key={i} href="#" className="w-10 h-10 bg-brand-text text-white rounded-full flex items-center justify-center hover:bg-brand-primary transition-colors">
-                          <Icon size={20} />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact Form */}
-                <form className="space-y-4 bg-white/30 p-6 rounded-2xl backdrop-blur-sm">
-                  <input 
-                    type="text" 
-                    placeholder="Enter Your Name:" 
-                    className="w-full px-4 py-3 rounded-lg bg-white/80 border-none focus:ring-2 focus:ring-brand-primary outline-none placeholder:text-gray-500"
-                  />
-                  <input 
-                    type="email" 
-                    placeholder="Enter Your Gmail:" 
-                    className="w-full px-4 py-3 rounded-lg bg-white/80 border-none focus:ring-2 focus:ring-brand-primary outline-none placeholder:text-gray-500"
-                  />
-                  <textarea 
-                    rows="4"
-                    placeholder="Enter Your Message:" 
-                    className="w-full px-4 py-3 rounded-lg bg-white/80 border-none focus:ring-2 focus:ring-brand-primary outline-none placeholder:text-gray-500 resize-none"
-                  ></textarea>
-                  
-                  <button className="w-full bg-brand-card hover:bg-brand-primary text-white font-bold py-3 rounded-full shadow-md transition-colors">
-                    Submit
-                  </button>
-                </form>
-             </div>
+          <div className="text-center mt-12">
+            <Link to="/menu" className="inline-flex items-center gap-2 border-2 border-brand-primary text-brand-primary font-bold py-3 px-8 rounded-full hover:bg-brand-primary hover:text-white transition-all">
+              View Full Menu <ArrowRight size={20} />
+            </Link>
           </div>
         </div>
       </section>

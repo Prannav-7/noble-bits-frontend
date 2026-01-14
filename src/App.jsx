@@ -11,6 +11,7 @@ import WishlistPage from './pages/WishlistPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminDashboard from './pages/AdminDashboard';
+import MyOrdersPage from './pages/MyOrdersPage';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -29,13 +30,14 @@ function App() {
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/product/:id" element={<ProductDetailsPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/my-orders" element={<MyOrdersPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/contact" element={<Home />} />
             </Routes>
 
             {/* Simple Footer */}
             <footer className="bg-brand-primary text-white py-6 text-center text-sm">
-              <p>&copy; 2025 Noble Bits. All rights reserved.</p>
+              <p>&copy; 2025 Noble Bites. All rights reserved.</p>
             </footer>
           </div>
         </Router>

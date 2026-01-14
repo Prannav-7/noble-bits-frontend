@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, Heart, User, LogOut, Shield } from 'lucide-react';
+import { Menu, X, ShoppingCart, Heart, User, LogOut, Shield, Package, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,6 +9,7 @@ import AuthModal from './AuthModal';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const location = useLocation();
   const { getCartCount, getWishlistCount } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
@@ -21,12 +22,12 @@ const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'About', path: '/#about' },
     { name: 'Menu', path: '/menu' },
-    { name: 'Contact', path: '/contact' },
   ];
 
   const handleLogout = () => {
     logout();
     setIsOpen(false);
+    setShowProfileDropdown(false);
   };
 
   return (
@@ -39,7 +40,7 @@ const Navbar = () => {
               <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-white">
                 <ShoppingCart size={20} />
               </div>
-              <span className="font-heading text-2xl font-bold text-brand-primary">Noble Bits</span>
+              <span className="font-heading text-2xl font-bold text-brand-primary">Noble Bites</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -77,28 +78,56 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {/* Admin Link - Only for authorized emails */}
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="relative p-2 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 transition-colors"
-                  title="Admin Dashboard"
-                >
-                  <Shield size={20} />
-                </Link>
-              )}
-
               {/* User Account */}
               {isAuthenticated() ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-brand-text font-medium">Hi, {user?.name || 'User'}</span>
+                <div className="relative">
                   <button
-                    onClick={handleLogout}
-                    className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
-                    title="Logout"
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                    className="flex items-center gap-2 text-brand-text hover:text-brand-primary transition-colors font-medium"
+                    onBlur={() => setTimeout(() => setShowProfileDropdown(false), 200)}
                   >
-                    <LogOut size={20} />
+                    <span>Hi, {user?.name || 'User'}</span>
+                    <ChevronDown size={18} className={`transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
                   </button>
+
+                  {/* Dropdown Menu */}
+                  {showProfileDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                    >
+                      <Link
+                        to="/my-orders"
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-brand-light transition-colors"
+                        onClick={() => setShowProfileDropdown(false)}
+                      >
+                        <Package size={18} className="text-brand-primary" />
+                        <span>My Orders</span>
+                      </Link>
+
+                      {isAdmin && (
+                        <Link
+                          to="/admin"
+                          className="flex items-center gap-2 px-4 py-2 hover:bg-brand-light transition-colors"
+                          onClick={() => setShowProfileDropdown(false)}
+                        >
+                          <Shield size={18} className="text-purple-600" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+
+                      <hr className="my-2" />
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
+                      >
+                        <LogOut size={18} />
+                        <span>Logout</span>
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               ) : (
                 <button
@@ -166,20 +195,28 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {/* Admin Link - Mobile */}
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-purple-600 hover:bg-purple-50"
-                >
-                  <Shield size={18} />
-                  Admin Dashboard
-                </Link>
-              )}
-
               {isAuthenticated() ? (
                 <>
+                  <Link
+                    to="/my-orders"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-light"
+                  >
+                    <Package size={18} />
+                    My Orders
+                  </Link>
+
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-purple-600 hover:bg-purple-50"
+                    >
+                      <Shield size={18} />
+                      Admin Dashboard
+                    </Link>
+                  )}
+
                   <div className="px-3 py-2 text-sm text-gray-600">
                     Logged in as: <span className="font-bold text-brand-primary">{user?.name}</span>
                   </div>
