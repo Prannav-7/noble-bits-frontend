@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, UtensilsCrossed } from 'lucide-react';
+import { Menu, X, ShoppingCart, Heart, User, LogOut, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './AuthModal';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
+  const { getCartCount, getWishlistCount } = useCart();
+  const { user, logout, isAuthenticated } = useAuth();
+
+  // Admin emails
+  const ADMIN_EMAILS = ['prannavp803@gmail.com', 'ran17062005@gmail.com'];
+  const isAdmin = user && ADMIN_EMAILS.includes(user.email);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -14,80 +24,195 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  return (
-    <nav className="sticky top-0 z-50 bg-brand-bg/95 backdrop-blur-sm shadow-sm border-b border-brand-secondary/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-white">
-              <UtensilsCrossed size={20} />
-            </div>
-            <span className="font-heading text-2xl font-bold text-brand-primary">Noble Bits</span>
-          </Link>
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+  };
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`font-medium text-lg transition-colors duration-200 ${
-                  location.pathname === link.path
+  return (
+    <>
+      <nav className="sticky top-0 z-50 bg-brand-bg/95 backdrop-blur-sm shadow-sm border-b border-brand-secondary/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-white">
+                <ShoppingCart size={20} />
+              </div>
+              <span className="font-heading text-2xl font-bold text-brand-primary">Noble Bits</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`font-medium text-lg transition-colors duration-200 ${location.pathname === link.path
                     ? 'text-brand-primary font-bold'
                     : 'text-brand-text hover:text-brand-primary'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <Link to="/cart" className="p-2 rounded-full bg-brand-secondary/20 hover:bg-brand-secondary/40 text-brand-primary transition-colors">
-              <ShoppingCart size={20} />
-            </Link>
-          </div>
+                    }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-brand-primary hover:text-brand-text focus:outline-none"
-            >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+              {/* Wishlist */}
+              <Link to="/wishlist" className="relative p-2 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors">
+                <Heart size={20} />
+                {getWishlistCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {getWishlistCount()}
+                  </span>
+                )}
+              </Link>
+
+              {/* Cart */}
+              <Link to="/cart" className="relative p-2 rounded-full bg-brand-secondary/20 hover:bg-brand-secondary/40 text-brand-primary transition-colors">
+                <ShoppingCart size={20} />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-brand-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {getCartCount()}
+                  </span>
+                )}
+              </Link>
+
+              {/* Admin Link - Only for authorized emails */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="relative p-2 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 transition-colors"
+                  title="Admin Dashboard"
+                >
+                  <Shield size={20} />
+                </Link>
+              )}
+
+              {/* User Account */}
+              {isAuthenticated() ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-brand-text font-medium">Hi, {user?.name || 'User'}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+                    title="Logout"
+                  >
+                    <LogOut size={20} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="flex items-center gap-2 bg-brand-primary text-white px-4 py-2 rounded-full hover:bg-brand-text transition-colors"
+                >
+                  <User size={18} />
+                  Login
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-brand-primary hover:text-brand-text focus:outline-none"
+              >
+                {isOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="md:hidden bg-brand-bg border-t border-brand-secondary/20"
-        >
-          <div className="px-4 pt-2 pb-6 space-y-2">
-            {navLinks.map((link) => (
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="md:hidden bg-brand-bg border-t border-brand-secondary/20"
+          >
+            <div className="px-4 pt-2 pb-6 space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-light"
+                >
+                  {link.name}
+                </Link>
+              ))}
               <Link
-                key={link.name}
-                to={link.path}
+                to="/wishlist"
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-light"
+                className="flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-light"
               >
-                {link.name}
+                Wishlist
+                {getWishlistCount() > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {getWishlistCount()}
+                  </span>
+                )}
               </Link>
-            ))}
-             <Link
+              <Link
                 to="/cart"
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-light"
+                className="flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-light"
               >
                 My Cart
+                {getCartCount() > 0 && (
+                  <span className="bg-brand-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
               </Link>
-          </div>
-        </motion.div>
-      )}
-    </nav>
+
+              {/* Admin Link - Mobile */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-purple-600 hover:bg-purple-50"
+                >
+                  <Shield size={18} />
+                  Admin Dashboard
+                </Link>
+              )}
+
+              {isAuthenticated() ? (
+                <>
+                  <div className="px-3 py-2 text-sm text-gray-600">
+                    Logged in as: <span className="font-bold text-brand-primary">{user?.name}</span>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    setShowAuthModal(true);
+                    setIsOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-brand-primary hover:bg-brand-light"
+                >
+                  Login / Register
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </nav>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
+    </>
   );
 };
 
 export default Navbar;
+
